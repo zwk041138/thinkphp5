@@ -1,5 +1,0 @@
-thinkphp5课程
-1.1：课程介绍
-1.2.1:thinkphp5简介
-1.2.2：使用composer安装thinkphp5
-
