@@ -40,6 +40,9 @@ class User extends Controller
         return "index<br>";
     }
 
+    /**
+     * @return string
+     */
     public function  getUserInfo(){
         return "index/getUserInfo";
     }
