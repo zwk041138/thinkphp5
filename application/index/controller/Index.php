@@ -10,6 +10,15 @@ use think\url;
 class Index extends  Collection
 {
     /**
+     * 转换和自动完成
+     */
+    public function zh(){
+       // Data::create(['name'=>'123123']);
+        $data = Data::get(18);
+        $data->sex = 2;
+        $data->save();
+    }
+    /**
      * 读取器与修改器
      */
     public function dq(){
