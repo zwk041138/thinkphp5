@@ -10,6 +10,17 @@ use think\url;
 class Index extends  Collection
 {
     /**
+     * 读取器与修改器
+     */
+    public function dq(){
+        $data = Data::get(12);
+        echo $data->name.'<br>';
+        echo $data->status."<br>";
+        $data->name = 111;
+        $data->save();
+
+    }
+    /**
      * 模型和关联2
      */
     public function mx2(){
@@ -68,7 +79,7 @@ class Index extends  Collection
 //        $data->delete();
         //或者使用
        // Data::destroy(11);
-        
+
 
     }
     /**
