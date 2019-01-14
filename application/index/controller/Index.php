@@ -9,6 +9,16 @@ use think\url;
 class Index extends  Collection
 {
     /**
+     * 查询语言
+     */
+    public function cx(){
+        echo "cx";
+        $result = Db::name('data')->where('id',4)->find();
+        $result2 = Db::name('data')->insert(['name'=>'thinkphp','status'=>1]);
+        var_dump($result);
+        var_dump($result2);
+    }
+    /**
      * 事务
      */
     public function sw(){
