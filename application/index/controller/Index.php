@@ -1,6 +1,7 @@
 <?php
 namespace app\index\controller;
 
+use app\index\model\Data;
 use think\Collection;
 use think\Db;
 use think\Exception;
@@ -8,6 +9,28 @@ use think\Request;
 use think\url;
 class Index extends  Collection
 {
+    /**
+     * 模型和关联2
+     */
+    
+    /**
+     * 模型和关联
+     */
+    public function mx(){
+        //查询
+      $result =   Data::get(5);
+      //插入
+//        $data = new Data();
+//        $data->name = '11111';
+//        $data->status = 1;
+//        $data->save();
+        //另外插入方法
+        $data['name'] = '1111';
+        $data['status'] = '1';
+        if($result = Data::create($data)){
+            echo "用户id：".$result->id."用户名字：".$result->name."用户状态：".$result->status;
+        }
+    }
     /**
      * 查询下
      */
