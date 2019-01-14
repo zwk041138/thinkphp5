@@ -9,6 +9,47 @@ use think\url;
 class Index extends  Collection
 {
     /**
+     * 查询下
+     */
+    public function cx2(){
+        //查询某行
+        $name = Db::name('data')->where('id',12)->value('name');
+        var_dump($name);
+        //获得某列
+        $name = Db::name('data')->where('status',1)->column('name');
+        var_dump($name);
+        //获取id的键名name位置的建值对
+        $list = Db::name('data')->where('status',1)->column('name','id');
+        var_dump($list);
+        //获取id键名
+        $list = Db::name('data')->where('status','1')->column('*','id');
+        var_dump($list);
+        //聚合查询
+        //count总数
+        $count = Db::name('data')->where('status','1')->count();
+        var_dump($count);
+        //max
+        $max = Db::name('data')->where('status',1)->max('id');
+        var_dump($max);
+        //建议字符串简单查询
+        $result = Db::name('data')->where('id>:id and name like "%php%"',['id'=>10])->select();
+        var_dump($result);
+        //查询时间
+//        $result = Db::name('data')->whereTime('time','>','2017-01-01');
+//        var_dump($result);
+//        $result = Db::name('data')->whereTime('time','>','this week')->select();
+//        $result = Db::name('data')->whereTime('time','>','-2 days')->select();
+//        $result = Db::name('data')->whereTime('time','between','["2018-01-01","2019-01-01"]')->select();
+//        $result = Db::name('data')->whereTime('time',"today")->select();
+       //分块查询
+        Db::name('data')->where('status','>',0)
+            ->chunk(2,function($list){
+                foreach ($list as $data){
+
+                }
+            });
+    }
+    /**
      * 查询语言
      */
     public function cx(){
