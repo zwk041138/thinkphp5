@@ -12,7 +12,65 @@ class Index extends  Collection
     /**
      * 模型和关联2
      */
-    
+    public function mx2(){
+        //批量新增
+//        $data = new Data();
+//        $list = [
+//            ['name'=>'22222','status'=>'22222'],
+//            ['name'=>'33333','status'=>'33333'],
+//        ];
+//        if($data->saveAll($list)){
+//            echo '用户批量新增成功';
+//        }
+        //查询数据
+//        $data = Data::get(14);
+//        echo $data->name;
+//        echo '<br>';
+//        echo $data->status;
+        //第二种查询
+//        $data = Data::get(14);
+//        echo $data['name'];
+//        echo '<br>';
+//        echo $data['status'];
+        //查询某个条件查询数据 getbyxxxx()方法
+//        $data = Data::getByName('thinkphp');
+//        echo $data['name'];
+//        echo "<br>";
+//        echo $data['status'];
+        //通过其他条件来查
+//        $data = Data::get(["name"=>'thinkphp']);
+//        $data = Data::where(["name"=>'thinkphp'])->find();
+//        var_dump($data);
+        //查询多个数据
+//        $list = Data::all();
+//        $list = Data::all(['id'=>10]);
+//        $list = Data::where('id',"<=",3)->select();
+//        foreach ($list as $v){
+//            echo 'id'.$v->id;
+//            echo 'name'.$v->name;
+//            echo '<br>';
+//        }
+        //var_dump($list);
+        //对于数据库查询出来的数据更新数据
+//        $data = Data::get(10);
+//        $data->name = "44444";
+//        $data->status = '1';
+        //if(false != $data->save()){
+//        if(false != $data->isUpdate(false)->save()){
+//            return "更新用户成功";
+//        }else return $data->getError();
+        //自己定义是数据更新操作
+//        $data['name']='123456';
+//        $data['status'] = 1;
+//        Data::update($data,['id'=>10]);
+        //删除操作
+//        $data = Data::get(10);
+//        $data->delete();
+        //或者使用
+       // Data::destroy(11);
+        
+
+    }
     /**
      * 模型和关联
      */
