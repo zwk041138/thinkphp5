@@ -2,6 +2,7 @@
 namespace app\index\controller;
 
 use think\Collection;
+use think\Request;
 use think\url;
 class Index extends  Collection
 {
@@ -34,4 +35,5 @@ class Index extends  Collection
         echo url('today/2017/07');//路由规则
         echo '<br/>';
     }
+
 }
