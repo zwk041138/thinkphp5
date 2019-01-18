@@ -5,6 +5,19 @@ use think\Model;
 
 class Data extends Model
 {
+    //查询范围
+
+    //status自动查询
+    protected function scopeStatus($query){
+        $query->where('status','127');
+    }
+    protected function scopeSex($query){
+        $query->where('sex','2');
+    }
+    //全局查询
+    protected static  function  base($query){
+        $query->where('id',10);
+    }
     //类型转换
 //    protected  $type = array(
 //        'birthday'=>'timestamp:Y-m-d',

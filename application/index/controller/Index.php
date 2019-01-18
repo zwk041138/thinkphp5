@@ -10,6 +10,14 @@ use think\url;
 class Index extends  Collection
 {
     /**
+     * 查询范围
+     */
+    public function fw(){
+        $list = Data::scope('status,sex')->select();
+
+        print_r($list);
+    }
+    /**
      * 转换和自动完成
      */
     public function zh(){
