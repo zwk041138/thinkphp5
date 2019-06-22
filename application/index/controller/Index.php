@@ -10,11 +10,16 @@ use think\url;
 class Index extends  Collection
 {
     /**
+     * tp5输入和验证
+     */
+    public function sr(){
+
+    }
+    /**
      * 查询范围
      */
     public function fw(){
         $list = Data::scope('status,sex')->select();
-
         print_r($list);
     }
     /**
@@ -202,7 +207,8 @@ class Index extends  Collection
     }
     public function index()
     {
-        return "今天是：".date("Y-m-d H:i:s");
+       // return "今天是：".date("Y-m-d H:i:s");
+        return view();
     }
     public function hello($name=''){
         echo "hell0:".$name;

@@ -1,1 +1,19 @@
-{$name}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>创建用户</title>
+</head>
+<body>
+<form action="{:url('index/index/sr')}" class="form" method="post">
+    昵称：<input type="text" class="text" name="mickname"><br>
+    邮箱：<input type="text" class="text" name="email"><br>
+    生日：<input type="text" class="text" name="birthday"><br>
+    <input type="hidden" name="__token__" value="{$Request.token}">
+    <input type="submit" class="btn" value="提交">
+</form>
+</body>
+</html>

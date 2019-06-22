@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -12,7 +12,6 @@
 namespace think;
 
 use think\exception\TemplateNotFoundException;
-use think\template\TagLib;
 
 /**
  * ThinkPHP分离出来的模板引擎
@@ -26,7 +25,6 @@ class Template
     // 引擎配置
     protected $config = [
         'view_path'          => '', // 模板路径
-        'view_base'          => '',
         'view_suffix'        => 'html', // 默认模板文件后缀
         'view_depr'          => DS,
         'cache_suffix'       => 'php', // 默认模板缓存后缀
@@ -58,27 +56,36 @@ class Template
     protected $storage;
 
     /**
-     * 构造函数
+     * 架构函数
      * @access public
-     * @param array $config
      */
     public function __construct(array $config = [])
     {
-        $this->config['cache_path'] = TEMP_PATH;
-        $this->config               = array_merge($this->config, $config);
-
-        $this->config['taglib_begin_origin'] = $this->config['taglib_begin'];
-        $this->config['taglib_end_origin']   = $this->config['taglib_end'];
-
-        $this->config['taglib_begin'] = preg_quote($this->config['taglib_begin'], '/');
-        $this->config['taglib_end']   = preg_quote($this->config['taglib_end'], '/');
-        $this->config['tpl_begin']    = preg_quote($this->config['tpl_begin'], '/');
-        $this->config['tpl_end']      = preg_quote($this->config['tpl_end'], '/');
+        $this->config['cache_path']   = TEMP_PATH;
+        $this->config                 = array_merge($this->config, $config);
+        $this->config['taglib_begin'] = $this->stripPreg($this->config['taglib_begin']);
+        $this->config['taglib_end']   = $this->stripPreg($this->config['taglib_end']);
+        $this->config['tpl_begin']    = $this->stripPreg($this->config['tpl_begin']);
+        $this->config['tpl_end']      = $this->stripPreg($this->config['tpl_end']);
 
         // 初始化模板编译存储器
         $type          = $this->config['compile_type'] ? $this->config['compile_type'] : 'File';
         $class         = false !== strpos($type, '\\') ? $type : '\\think\\template\\driver\\' . ucwords($type);
         $this->storage = new $class();
+    }
+
+    /**
+     * 字符串替换 避免正则混淆
+     * @access private
+     * @param string $str
+     * @return string
+     */
+    private function stripPreg($str)
+    {
+        return str_replace(
+            ['{', '}', '(', ')', '|', '[', ']', '-', '+', '*', '.', '^', '?'],
+            ['\{', '\}', '\(', '\)', '\|', '\[', '\]', '\-', '\+', '\*', '\.', '\^', '\?'],
+            $str);
     }
 
     /**
@@ -112,7 +119,7 @@ class Template
      * 模板引擎配置项
      * @access public
      * @param array|string $config
-     * @return string|void|array
+     * @return void|array
      */
     public function config($config)
     {
@@ -121,7 +128,7 @@ class Template
         } elseif (isset($this->config[$config])) {
             return $this->config[$config];
         } else {
-            return;
+            return null;
         }
     }
 
@@ -175,7 +182,7 @@ class Template
         }
         $template = $this->parseTemplateFile($template);
         if ($template) {
-            $cacheFile = $this->config['cache_path'] . $this->config['cache_prefix'] . md5($this->config['layout_name'] . $template) . '.' . ltrim($this->config['cache_suffix'], '.');
+            $cacheFile = $this->config['cache_path'] . $this->config['cache_prefix'] . md5($template) . '.' . ltrim($this->config['cache_suffix'], '.');
             if (!$this->checkCache($cacheFile)) {
                 // 缓存无效 重新模板编译
                 $content = file_get_contents($template);
@@ -226,7 +233,7 @@ class Template
      * @access public
      * @param mixed     $name 布局模板名称 false 则关闭布局
      * @param string    $replace 布局模板内容替换标识
-     * @return Template
+     * @return object
      */
     public function layout($name, $replace = '')
     {
@@ -660,7 +667,7 @@ class Template
             $content = str_replace($matches[0], '', $content);
             return explode(',', $matches['name']);
         }
-        return;
+        return null;
     }
 
     /**
@@ -680,7 +687,6 @@ class Template
         } else {
             $className = '\\think\\template\\taglib\\' . ucwords($tagLib);
         }
-        /** @var Taglib $tLib */
         $tLib = new $className($this);
         $tLib->parseTag($content, $hide ? '' : $tagLib);
         return;
@@ -756,26 +762,31 @@ class Template
                             } else {
                                 if (isset($array[1])) {
                                     $this->parseVar($array[2]);
-                                    $express = $name . $array[1] . $array[2];
+                                    $_name = ' && ' . $name . $array[1] . $array[2];
                                 } else {
-                                    $express = false;
+                                    $_name = '';
                                 }
                                 // $name为数组
                                 switch ($first) {
                                     case '?':
                                         // {$varname??'xxx'} $varname有定义则输出$varname,否则输出xxx
-                                        $str = '<?php echo ' . ($express ?: 'isset(' . $name . ')') . '?' . $name . ':' . substr($str, 1) . '; ?>';
+                                        $str = '<?php echo isset(' . $name . ')' . $_name . ' ? ' . $name . ' : ' . substr($str, 1) . '; ?>';
                                         break;
                                     case '=':
                                         // {$varname?='xxx'} $varname为真时才输出xxx
-                                        $str = '<?php if(' . ($express ?: '!empty(' . $name . ')') . ') echo ' . substr($str, 1) . '; ?>';
+                                        $str = '<?php if(!empty(' . $name . ')' . $_name . ') echo ' . substr($str, 1) . '; ?>';
                                         break;
                                     case ':':
                                         // {$varname?:'xxx'} $varname为真时输出$varname,否则输出xxx
-                                        $str = '<?php echo ' . ($express ?: '!empty(' . $name . ')') . '?' . $name . $str . '; ?>';
+                                        $str = '<?php echo !empty(' . $name . ')' . $_name . '?' . $name . $str . '; ?>';
                                         break;
                                     default:
-                                        $str = '<?php echo ' . ($express ?: '!empty(' . $name . ')') . '?' . $str . '; ?>';
+                                        if (strpos($str, ':')) {
+                                            // {$varname ? 'a' : 'b'} $varname为真时输出a,否则输出b
+                                            $str = '<?php echo !empty(' . $name . ')' . $_name . '?' . $str . '; ?>';
+                                        } else {
+                                            $str = '<?php echo ' . $_name . '?' . $str . '; ?>';
+                                        }
                                 }
                             }
                         } else {
@@ -915,7 +926,7 @@ class Template
                         if (false === strpos($name, '(')) {
                             $name = '(isset(' . $name . ') && (' . $name . ' !== \'\')?' . $name . ':' . $args[1] . ')';
                         } else {
-                            $name = '(' . $name . ' ?: ' . $args[1] . ')';
+                            $name = '(' . $name . ' !== \'\'?' . $name . ':' . $args[1] . ')';
                         }
                         break;
                     default: // 通用模板函数
@@ -1050,20 +1061,14 @@ class Template
     {
         if ('' == pathinfo($template, PATHINFO_EXTENSION)) {
             if (strpos($template, '@')) {
-                list($module, $template) = explode('@', $template);
-            }
-            if (0 !== strpos($template, '/')) {
+                // 跨模块调用模板
                 $template = str_replace(['/', ':'], $this->config['view_depr'], $template);
+                $template = APP_PATH . str_replace('@', '/' . basename($this->config['view_path']) . '/', $template);
             } else {
-                $template = str_replace(['/', ':'], $this->config['view_depr'], substr($template, 1));
+                $template = str_replace(['/', ':'], $this->config['view_depr'], $template);
+                $template = $this->config['view_path'] . $template;
             }
-            if ($this->config['view_base']) {
-                $module = isset($module) ? $module : Request::instance()->module();
-                $path   = $this->config['view_base'] . ($module ? $module . DS : '');
-            } else {
-                $path = isset($module) ? APP_PATH . $module . DS . basename($this->config['view_path']) . DS : $this->config['view_path'];
-            }
-            $template = realpath($path . $template . '.' . ltrim($this->config['view_suffix'], '.'));
+            $template .= '.' . ltrim($this->config['view_suffix'], '.');
         }
 
         if (is_file($template)) {
